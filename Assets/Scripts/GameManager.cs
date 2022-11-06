@@ -62,4 +62,15 @@ public class GameManager : NetworkBehaviour {
             players.Add(playerSpawn);
         }
     }
+
+    public void EndGame()
+    {
+        Player[] ps = FindObjectsOfType<Player>();
+        foreach (Player p in ps)
+        {
+            Debug.Log(p.gameObject.name);
+            p.gameObject.GetComponentInChildren<BulletSpawner>().enabled = false;
+            p.SetEndText();
+        }
+    }
 }

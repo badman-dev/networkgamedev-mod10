@@ -11,11 +11,12 @@ public class Player : NetworkBehaviour {
     public NetworkVariable<int> Score = new NetworkVariable<int>(50);
 
     public TMPro.TMP_Text txtScoreDisplay;
+    public TMPro.TMP_Text txtEndDisplay;
 
     private GameManager _gameMgr;
     private Camera _camera;
     public float movementSpeed = .5f;
-    private float rotationSpeed = 1f;
+    private float rotationSpeed = 5f;
     private BulletSpawner _bulletSpawner;
 
     private void Start() {
@@ -25,11 +26,15 @@ public class Player : NetworkBehaviour {
     }
 
     public override void OnNetworkSpawn() {
+        _gameMgr = FindObjectOfType<GameManager>();
+
         _camera = transform.Find("Camera").GetComponent<Camera>();
         _camera.enabled = IsOwner;
 
         Score.OnValueChanged += ClientOnScoreChanged;
         DisplayScore();
+
+        txtEndDisplay.text = "";
     }
 
     private void HostHandleBulletCollision(GameObject bullet)
@@ -48,6 +53,7 @@ public class Player : NetworkBehaviour {
     private void ClientOnScoreChanged(int previous, int current)
     {
         DisplayScore();
+        CheckLoss();
     }
 
     private void HostHandleDamageBoostPickup(Collider other)
@@ -147,5 +153,29 @@ public class Player : NetworkBehaviour {
     public void DisplayScore()
     {
         txtScoreDisplay.text = Score.Value.ToString();
+    }
+
+    public void CheckLoss()
+    {
+        if (Score.Value <= 0)
+        {
+            if (_gameMgr == null)
+            {
+                _gameMgr = FindObjectOfType<GameManager>();
+            }
+            _gameMgr.EndGame();
+        }
+    }
+
+    public void SetEndText()
+    {
+        if (Score.Value <= 0)
+        {
+            txtEndDisplay.text = "You loose!";
+        }
+        else
+        {
+            txtEndDisplay.text = "You win!";
+        }
     }
 }
