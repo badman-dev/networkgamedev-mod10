@@ -32,8 +32,11 @@ public class ChatUI : NetworkBehaviour {
 
     public override void OnDestroy()
     {
-        NetworkManager.Singleton.OnClientConnectedCallback -= HostOnClientConnected;
-        NetworkManager.Singleton.OnClientDisconnectCallback -= HostOnClientDisconnected;
+        if (IsHost)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= HostOnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= HostOnClientDisconnected;
+        }
     }
 
     private void SendUIMessage() {
