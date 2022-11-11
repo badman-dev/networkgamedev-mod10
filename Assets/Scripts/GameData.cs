@@ -3,6 +3,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using Unity.Multiplayer.Tools.NetStatsMonitor;
 
 public class GameData : NetworkBehaviour {
     private static GameData _instance;
@@ -23,6 +24,8 @@ public class GameData : NetworkBehaviour {
 
     public NetworkList<PlayerInfo> allPlayers;
 
+    private RuntimeNetStatsMonitor netStats;
+
     // --------------------------
     // Initialization
     // --------------------------
@@ -40,6 +43,23 @@ public class GameData : NetworkBehaviour {
             DontDestroyOnLoad(this);
         } else if(_instance != this) {
             Destroy(this);
+        }
+    }
+
+    private void Start()
+    {
+        netStats = FindObjectOfType<RuntimeNetStatsMonitor>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            if(netStats)
+            {
+                netStats.Visible = !netStats.Visible;
+                netStats.enabled = netStats.Visible;
+            }
         }
     }
 
