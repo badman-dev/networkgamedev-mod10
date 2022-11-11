@@ -110,9 +110,9 @@ public class Main : NetworkBehaviour {
     {
         txtStatus.text = "Failed to connect to server";
 
-        btnHost.gameObject.SetActive(true);
-        btnClient.gameObject.SetActive(true);
-        inputIp.enabled = true;
-        inputPort.enabled = true;
+        //btnHost.gameObject.SetActive(true);
+        //btnClient.gameObject.SetActive(true);
+        //inputIp.enabled = true;
+        //inputPort.enabled = true;
     }
 }

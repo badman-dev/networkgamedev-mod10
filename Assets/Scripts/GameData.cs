@@ -94,10 +94,7 @@ public class GameData : NetworkBehaviour {
     }
 
     private void HostOnClientDisconnected(ulong clientId) {
-        int index = FindPlayerIndex(clientId);
-        if (index != -1) {
-            allPlayers.RemoveAt(index);
-        }
+        RemovePlayerFromList(clientId);
     }
 
 
@@ -108,6 +105,14 @@ public class GameData : NetworkBehaviour {
         allPlayers.Add(new PlayerInfo(clientId, NextColor(), false));
     }
 
+    public void RemovePlayerFromList(ulong clientId)
+    {
+        int index = FindPlayerIndex(clientId);
+        if (index != -1)
+        {
+            allPlayers.RemoveAt(index);
+        }
+    }
 
     public int FindPlayerIndex(ulong clientId) {
         var idx = 0;

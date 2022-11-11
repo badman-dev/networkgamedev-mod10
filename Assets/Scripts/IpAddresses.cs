@@ -50,6 +50,7 @@ public class IpAddresses : MonoBehaviour
         IpChosen.Invoke(ip);
     }
 
+    //https://forum.unity.com/threads/how-to-get-the-client-lan-ip-address.1306539/
     public string GetGlobalIp()
     {
         string toReturn = "?.?.?.?";
