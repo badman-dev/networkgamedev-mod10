@@ -22,6 +22,8 @@ public class GameManager : NetworkBehaviour {
         if (IsHost)
         {
             SpawnPlayers();
+            NetworkManager.Singleton.OnClientDisconnectCallback += HostOnClientDisconnect;
+            NetworkManager.Singleton.OnClientConnectedCallback += HostOnClientConnected;
         }
     }
 
@@ -56,11 +58,16 @@ public class GameManager : NetworkBehaviour {
     {
         foreach(PlayerInfo pi in GameData.Instance.allPlayers)
         {
-            Player playerSpawn = Instantiate(playerPrefab, GetNextSpawnLocation(), Quaternion.identity);
-            playerSpawn.GetComponent<NetworkObject>().SpawnAsPlayerObject(pi.clientId);
-            playerSpawn.PlayerColor.Value = pi.color;
-            players.Add(playerSpawn);
+            SpawnPlayer(pi);
         }
+    }
+
+    private void SpawnPlayer(PlayerInfo info)
+    {
+        Player playerSpawn = Instantiate(playerPrefab, GetNextSpawnLocation(), Quaternion.identity);
+        playerSpawn.GetComponent<NetworkObject>().SpawnAsPlayerObject(info.clientId);
+        playerSpawn.PlayerColor.Value = info.color;
+        players.Add(playerSpawn);
     }
 
     public void EndGame()
@@ -71,6 +78,24 @@ public class GameManager : NetworkBehaviour {
             Debug.Log(p.gameObject.name);
             p.gameObject.GetComponentInChildren<BulletSpawner>().enabled = false;
             p.SetEndText();
+        }
+    }
+
+    private void HostOnClientDisconnect(ulong clientId)
+    {
+        NetworkObject nObject = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
+        Player pObject = nObject.GetComponent<Player>();
+        players.Remove(pObject);
+        Destroy(pObject);
+    }
+
+    private void HostOnClientConnected(ulong clientId)
+    {
+        int playerIndex = GameData.Instance.FindPlayerIndex(clientId);
+        if (playerIndex != -1)
+        {
+            PlayerInfo newPlayerInfo = GameData.Instance.allPlayers[playerIndex];
+            SpawnPlayer(newPlayerInfo);
         }
     }
 }
